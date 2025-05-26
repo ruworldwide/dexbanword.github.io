@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Стилизованный конвертер текста</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 800px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(45deg, #fff, #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-size: 16px;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            transform: scale(1.02);
+        }
+
+        .convert-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 20px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .convert-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
+        }
+
+        .convert-btn:active {
+            transform: translateY(0);
+        }
+
+        .output-section {
+            margin-top: 30px;
+        }
+
+        .output {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 120px;
+            font-size: 18px;
+            line-height: 1.6;
+            word-break: break-word;
+            position: relative;
+            overflow-wrap: anywhere;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            color: white;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .style-options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .style-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .style-btn.active {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(1.05);
+        }
+
+        .style-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .style-options {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Стилизованный Конвертер</h1>
+        
+        <div class="input-section">
+            <label for="inputText">Введите текст для конвертации:</label>
+            <textarea id="inputText" placeholder="Напишите здесь ваш текст..."></textarea>
+        </div>
+
+        <div class="style-options">
+            <button class="style-btn active" data-style="latin">Латиница</button>
+            <button class="style-btn" data-style="symbols">Символы</button>
+            <button class="style-btn" data-style="mixed">Смешанный</button>
+            <button class="style-btn" data-style="decorative">Декоративный</button>
+        </div>
+
+        <button class="convert-btn" onclick="convertText()">Конвертировать</button>
+
+        <div class="output-section">
+            <label>Результат:</label>
+            <div class="output" id="output">
+                <button class="copy-btn" onclick="copyToClipboard()">Копировать</button>
+                <div id="outputText">Здесь появится конвертированный текст...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStyle = 'latin';
+
+        // Словари для разных стилей конвертации
+        const conversionMaps = {
+            latin: {
+                'а': 'a', 'б': '6', 'в': 'B', 'г': 'r', 'д': 'g', 'е': 'e', 'ё': 'e',
+                'ж': 'zh', 'з': '3', 'и': 'u', 'й': 'u', 'к': 'k', 'л': 'JI', 'м': 'M',
+                'н': 'H', 'о': 'o', 'п': 'n', 'р': 'p', 'с': 'c', 'т': 'T', 'у': 'y',
+                'ф': 'f', 'х': 'x', 'ц': 'u,', 'ч': '4', 'ш': 'w', 'щ': 'w,', 'ъ': 'b',
+                'ы': 'bl', 'ь': 'b', 'э': 'e', 'ю': 'io', 'я': 'ya'
+            },
+            symbols: {
+                'а': '@', 'б': '6', 'в': '8', 'г': 'Г', 'д': 'Д', 'е': '€', 'ё': '€',
+                'ж': '✶', 'з': '3', 'и': '¡', 'й': '¡̃', 'к': '₭', 'л': 'Ł', 'м': '₥',
+                'н': 'ℍ', 'о': '◯', 'п': 'ⁿ', 'р': '₽', 'с': '¢', 'т': '†', 'у': 'µ',
+                'ф': 'ƒ', 'х': '✗', 'ц': 'ц', 'ч': '⁴', 'ш': 'ω', 'щ': 'ω̃', 'ъ': 'ъ',
+                'ы': 'ы', 'ь': 'ь', 'э': '∃', 'ю': '⊔', 'я': '∿'
+            },
+            mixed: {
+                'а': 'a', 'б': '6', 'в': 'B', 'г': 'Г', 'д': 'g', 'е': '€', 'ё': 'ё',
+                'ж': 'zh', 'з': '3', 'и': 'u', 'й': 'й', 'к': 'k', 'л': 'JI', 'м': 'M',
+                'н': 'H', 'о': '◯', 'п': 'ⁿ', 'р': 'p', 'с': 'c', 'т': '†', 'у': 'y',
+                'ф': 'ƒ', 'х': 'x', 'ц': 'u,', 'ч': '4', 'ш': 'ω', 'щ': 'w,', 'ъ': 'b',
+                'ы': 'bl', 'ь': 'b', 'э': '∃', 'ю': 'io', 'я': 'ya'
+            },
+            decorative: {
+                'а': 'α', 'б': 'β', 'в': 'ν', 'г': 'γ', 'д': 'δ', 'е': 'ε', 'ё': 'ë',
+                'ж': 'ж', 'з': 'ζ', 'и': 'ι', 'й': 'ĩ', 'к': 'κ', 'л': 'λ', 'м': 'μ',
+                'н': 'η', 'о': 'ο', 'п': 'π', 'р': 'ρ', 'с': 'σ', 'т': 'τ', 'у': 'υ',
+                'ф': 'φ', 'х': 'χ', 'ц': 'ψ', 'ч': 'ч', 'ш': 'ш', 'щ': 'щ', 'ъ': 'ъ',
+                'ы': 'ы', 'ь': 'ь', 'э': 'э', 'ю': 'ю', 'я': 'я'
+            }
+        };
+
+        // Обработка кнопок стилей
+        document.querySelectorAll('.style-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentStyle = this.dataset.style;
+            });
+        });
+
+        function convertText() {
+            const inputText = document.getElementById('inputText').value;
+            const outputDiv = document.getElementById('outputText');
+            
+            if (!inputText.trim()) {
+                outputDiv.textContent = 'Введите текст для конвертации...';
+                return;
+            }
+
+            const conversionMap = conversionMaps[currentStyle];
+            let convertedText = '';
+
+            for (let char of inputText.toLowerCase()) {
+                if (conversionMap[char]) {
+                    convertedText += conversionMap[char];
+                } else {
+                    convertedText += char;
+                }
+            }
+
+            outputDiv.textContent = convertedText;
+            
+            // Добавляем анимацию появления
+            outputDiv.style.opacity = '0';
+            setTimeout(() => {
+                outputDiv.style.transition = 'opacity 0.5s ease';
+                outputDiv.style.opacity = '1';
+            }, 100);
+        }
+
+        function copyToClipboard() {
+            const outputText = document.getElementById('outputText').textContent;
+            
+            if (outputText && outputText !== 'Здесь появится конвертированный текст...' && outputText !== 'Введите текст для конвертации...') {
+                navigator.clipboard.writeText(outputText).then(() => {
+                    const copyBtn = document.querySelector('.copy-btn');
+                    const originalText = copyBtn.textContent;
+                    copyBtn.textContent = 'Скопировано!';
+                    copyBtn.style.background = 'rgba(0, 255, 0, 0.3)';
+                    
+                    setTimeout(() => {
+                        copyBtn.textContent = originalText;
+                        copyBtn.style.background = 'rgba(255, 255, 255, 0.2)';
+                    }, 2000);
+                });
+            }
+        }
+
+        // Автоматическая конвертация при вводе текста
+        document.getElementById('inputText').addEventListener('input', function() {
+            if (this.value.trim()) {
+                convertText();
+            }
+        });
+
+        // Обработка Enter для конвертации
+        document.getElementById('inputText').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                convertText();
+            }
+        });
+    </script>
+</body>
+</html>
